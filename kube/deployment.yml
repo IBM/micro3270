@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: micro3270
+spec:
+  selector:
+    matchLabels:
+      app: micro3270
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: micro3270
+    spec:
+      containers:
+        - name: micro3270
+          image: icr.io/zmodstack/micro3270
+          env:
+            - name: ZOS_HOST
+              value: "hostname-or-ip"
+            - name: ZOS_PORT
+              value: "23"
+          command: [ "/bin/bash"]
+          args: ["-c", "--", "while true; do sleep 30; done;" ]
