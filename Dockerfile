@@ -1,7 +1,7 @@
 ################## Build / Compile Stage ##################
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest AS builder
 RUN microdnf update -y \
-    && microdnf install -y git make gcc ncurses-devel
+    && microdnf install -y git make gcc ncurses-devel openssl-devel
 WORKDIR src
 COPY scripts/build-c3270.sh .
 RUN ./build-c3270.sh

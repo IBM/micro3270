@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/pmattes/x3270.git -b 4.2ga9 /src/x3270
+git clone https://github.com/pmattes/x3270.git -b 4.2ga10 /src/x3270
 cd /src/x3270
 
 # Following build guides from the following sources

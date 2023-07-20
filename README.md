@@ -1,16 +1,16 @@
 # micro3270
-A multi-architecture compatible, micro-sized, containerized [3270 emulator](https://en.wikipedia.org/wiki/IBM_3270).  
+A containerized lightweight multi-architecture compatible [3270 emulator](https://en.wikipedia.org/wiki/IBM_3270).  
 
 ### Features
 - Compiled from latest stable [`c3270`](https://x3270.miraheze.org/wiki/C3270) source
 - Multi-architecture compatibility with `x86`, `arm64`, and `s390x`
-- Minimized image size using RHEL8 [`ubi8-micro`](https://catalog.redhat.com/software/containers/ubi8/ubi-micro/5ff3f50a831939b08d1b832a) base and docker [multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
+- Minimized image size using RHEL8 [`ubi8-micro`](https://catalog.redhat.com/software/containers/ubi8/ubi-micro/5ff3f50a831939b08d1b832a) base and [multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
 - OpenShift Container Platform (OCP) and Kubernetes compatible
 
 ![OpenShift Terminal](docs/images/ocp-terminal.png)
 
 ## Usage Guide
-Run this image using `docker` with a specified z/OS hostname/ip and port.
+Run this image using `podman` with a specified z/OS hostname/ip and port.
 
 - `$ZOS_HOST` - The hostname or IP address of a reachable z/OS host
 - `$ZOS_PORT` - optional, for specifying a non-default telnet port
@@ -19,7 +19,7 @@ Run this image using `docker` with a specified z/OS hostname/ip and port.
 Launch a terminal application and run one of the following commands. 
 
 ```bash
-docker run -it icr.io/zmodstack/micro3270 $ZOS_HOST $ZOS_PORT
+podman run -it icr.io/zmodstack/micro3270 $ZOS_HOST $ZOS_PORT
 ```
 
 ### Running in Kubernetes
@@ -32,9 +32,16 @@ kubectl exec -it deploy/micro3270 -- sh
 ```
 
 ## Building
-To build locally using `docker`:
+To build locally using `podman`:
 ```bash
-docker build . -t $NAMESPACE/3270-emulator
+podman build . -t ibm/micro3270
+```
+
+### Using multi-architecture script
+Install [Podman Desktop](https://podman-desktop.io/) and ensure your podman machine is configured for building multi-architecture images.
+
+```bash
+./scripts/build-oci.sh
 ```
 
 ### Building c3270 from source
