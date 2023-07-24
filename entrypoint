@@ -19,7 +19,7 @@ if [ ! -f "$C3270_CONFIG_FILE" ]; then
 EOF
 
     echo "Configuration defaults set..."
-    cat $C3270_CONFIG_FILE
+    cat $HOME/.c3270pro
 fi
 
 printf "\n\nStarting micro3270...\n\n"

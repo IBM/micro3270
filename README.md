@@ -44,7 +44,7 @@ Using a "rootless" `podman` environment where the `podman-machine` does NOT have
         ```
     1. Launch a temporary container to copy files to the newly created volume (will timeout in 60s and be deleted)
         ```bash
-        tmp_container=$(podman run -d --rm -v micro3270-certs:/micro3270/certs --entrypoint="timeout" icr.io/zmodstack/micro3270:0.4.0-rc.1 60s tail -f /dev/null)
+        tmp_container=$(podman run -d --rm -v micro3270-certs:/micro3270/certs --entrypoint="timeout" icr.io/zmodstack/micro3270:0.4.0-rc.2 60s tail -f /dev/null)
         ```
     1. Copy local certificate(s) to volume
         ```bash
@@ -52,17 +52,8 @@ Using a "rootless" `podman` environment where the `podman-machine` does NOT have
         ```
 1. Run the container
     ```bash
-    podman run -it -v micro3270-certs:/micro3270/certs ibm/micro3270 $ZOS_HOST $ZOS_PORT
+    podman run -it -v micro3270-certs:/micro3270/certs icr.io/zmodstack/micro3270:0.4.0-rc.2 $ZOS_HOST $ZOS_PORT
     ```
-
-## Running in Kubernetes
-Run in a Kubernetes environment using the [`deployment.yaml`](kube/deployment.yaml).
-
-```
-kubectl apply -f kube/deployment.yml
-kubectl set env deploy/micro3270 ZOS_HOST=<ip_or_hostname> ZOS_PORT=<port>
-kubectl exec -it deploy/micro3270 -- sh
-```
 
 ## Building
 To build locally using `podman`:
