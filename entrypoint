@@ -1,0 +1,28 @@
+#!/bin/bash
+
+C3270_CONFIG_FILE=/micro3270/config.c3270
+
+printf "Checking if a configuration file ('$C3270_CONFIG_FILE') was provided. This file can be volume mounted to customize your configuration.\n\n"
+
+if [ ! -f "$C3270_CONFIG_FILE" ]; then
+    echo "Configuraiton file was not provided. Writing default configuration file."
+    echo ""
+    echo "For additional command-line and configuration options, see: https://x3270.miraheze.org/wiki/C3270/Command-line_options"
+
+    # Write default config to HOME directory at runtime
+    cat <<-EOF > $HOME/.c3270pro
+        ! Use the /certs directory for self-signed z/OS certificates
+        ! This directory is expected to be volume-mounted via the container runtime
+        c3270.caFile: /micro3270/certs/common_cacert
+        c3270.port: ${ZOS_PORT:-23}
+        c3270.hostname: $ZOS_HOST
+EOF
+
+    echo "Configuration defaults set..."
+    cat $C3270_CONFIG_FILE
+fi
+
+printf "\n\nStarting micro3270...\n\n"
+
+sleep 3
+exec c3270 "$@"
