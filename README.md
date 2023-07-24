@@ -21,7 +21,7 @@ Run this image using `podman` with a specified z/OS hostname/ip and port.
 - `/micro3270/certs/common_cacert` - optional directory containing TLS certificates, see [here](#running-locally-with-tls)
 
 
-### Running Locally
+## Running Locally
 Launch a terminal application and run one of the following commands. 
 
 ```bash
@@ -33,7 +33,7 @@ With additional [command-line options](https://x3270.miraheze.org/wiki/C3270/Com
 podman run -it icr.io/zmodstack/micro3270 [options] $ZOS_HOST $ZOS_PORT
 ```
 
-#### Running Locally with TLS
+### Running Locally with TLS
 For z/OS environments that require TLS connectivity with self-signed certificates, certificates can be placed in the `/micro3270/certs` directory. This can be done via volume mounting with your container runtime, or through copying files directly into the container's ephemeral filesystem.
 
 Using a "rootless" `podman` environment where the `podman-machine` does NOT have access to the local machine's filesystem
@@ -55,7 +55,7 @@ Using a "rootless" `podman` environment where the `podman-machine` does NOT have
     podman run -it -v micro3270-certs:/micro3270/certs ibm/micro3270 $ZOS_HOST $ZOS_PORT
     ```
 
-### Running in Kubernetes
+## Running in Kubernetes
 Run in a Kubernetes environment using the [`deployment.yaml`](kube/deployment.yaml).
 
 ```
@@ -78,6 +78,6 @@ Install [Podman Desktop](https://podman-desktop.io/) and ensure your podman mach
 ```
 
 ### Building c3270 from source
-This image pulls the latest stable tag, currently `4.2ga9`, from the official `x3270` [GitHub Repository](https://github.com/pmattes/x3270).
+This image pulls the latest stable tag, currently `4.2ga10`, from the official `x3270` [GitHub Repository](https://github.com/pmattes/x3270).
 
 Latest stable versions are can be seen on the `x3270` wiki [Downloads page](https://x3270.miraheze.org/wiki/Downloads).
