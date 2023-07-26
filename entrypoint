@@ -1,28 +1,46 @@
 #!/bin/bash
 
-C3270_CONFIG_FILE=/micro3270/config.c3270
+C3270_CONFIG_FILE=${C3270PRO:-/micro3270/config/.c3270}
+TMP_CONFIG_FILE=/tmp/.c3270
+# C3270_CONFIG_FILE=/tmp/.c3270
 
-printf "Checking if a configuration file ('$C3270_CONFIG_FILE') was provided. This file can be volume mounted to customize your configuration.\n\n"
+printf "\033[0;36m%s\033[0m\n" "Launching ibm/micro3270..."
+printf "Please open questions or report issues here: https://github.com/IBM/micro3270/issues\n\n"
+
+printf "\033[0;33m%s\033[0m\n" "Checking if a configuration file ('$C3270_CONFIG_FILE') was provided..."
+printf "This file can be volume mounted to customize your configuration.\n\n"
 
 if [ ! -f "$C3270_CONFIG_FILE" ]; then
-    echo "Configuraiton file was not provided. Writing default configuration file."
-    echo ""
-    echo "For additional command-line and configuration options, see: https://x3270.miraheze.org/wiki/C3270/Command-line_options"
+    printf "\033[0;33m%s\033[0m\n" "Configuration file was not provided. Writing default configuration file."
+    printf "For additional command-line and configuration options, see: https://x3270.miraheze.org/wiki/C3270/Command-line_options\n\n"
 
-    # Write default config to HOME directory at runtime
-    cat <<-EOF > $HOME/.c3270pro
-        ! Use the /certs directory for self-signed z/OS certificates
-        ! This directory is expected to be volume-mounted via the container runtime
-        c3270.caFile: /micro3270/certs/common_cacert
-        c3270.port: ${ZOS_PORT:-23}
-        c3270.hostname: $ZOS_HOST
+    if [ ! -w "$C3270_CONFIG_FILE" ]; then
+        printf "\n\033[0;33m%s\033[0m%s" "Default config file location isn't writable, using: " "${TMP_CONFIG_FILE}"
+        export C3270_CONFIG_FILE=$TMP_CONFIG_FILE
+        export C3270PRO=$TMP_CONFIG_FILE
+    fi
+
+    cat <<-EOF > $C3270_CONFIG_FILE
+    ! This file can be volume-mounted via the container runtime
+    c3270.port: ${ZOS_PORT:-23}
+    c3270.hostname: $ZOS_HOST
+
+    ! Uncomment and volume-mount your certificate z/OS environments using TLS connectivity with a self-signed cert
+    ! c3270.caFile: $C3270_CONFIG_FILE
+    ! c3270.acceptHostname <private-ip-address>
 EOF
-
-    echo "Configuration defaults set..."
-    cat $HOME/.c3270pro
+else
+    printf "\033[0;36m%s\033[0m\n\n" "Configuration file found!\n\n"
 fi
 
-printf "\n\nStarting micro3270...\n\n"
+printf "\033[0;36m%s\033[0m\n" "Displaying configuration profile..."
+cat $C3270_CONFIG_FILE
+printf "\n\n"
+printf "\033[0;36m%s\033[0m\n" "Starting ibm/micro3270..."
 
-sleep 3
-exec c3270 "$@"
+if [ -z "$PS1" ]; then
+    printf "\033[0;31m%s\033[0m\n" "Running in non-interactive mode. Use the OCP Terminal UI tab, 'kubectl exec -it', or 'podman exec -it' to interact with the ibm/micro3270 emulator!"
+    /bin/bash -c "while true; do sleep 30; done;"
+else
+    exec c3270 "$@"
+fi

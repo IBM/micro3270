@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: micro3270-config
+data:
+  .c3270: |
+    ! Additional configurations as seen here: https://x3270.miraheze.org/wiki/C3270/Command-line_options
+    c3270.caFile: /micro3270/config/common_cacert
+    c3270.port: <telnet or telnet-secure port>
+    c3270.hostname: <hostname-or-ip>
+    !c3270.acceptHostname: <private-ip-address>
+  common_cacert: |
+    <optional, paste PEM encoded certificate here>
