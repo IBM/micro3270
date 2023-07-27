@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: micro3270-config
+spec:
+  selector:
+    matchLabels:
+      app: micro3270-config
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: micro3270-config
+    spec:
+      containers:
+        - name: micro3270
+          image: icr.io/zmodstack/micro3270
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: "/micro3270/config/"
+              name: config
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: micro3270-config

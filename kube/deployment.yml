@@ -15,10 +15,9 @@ spec:
       containers:
         - name: micro3270
           image: icr.io/zmodstack/micro3270
+          imagePullPolicy: Always
           env:
             - name: ZOS_HOST
               value: "hostname-or-ip"
             - name: ZOS_PORT
               value: "23"
-          command: [ "/bin/bash"]
-          args: ["-c", "--", "while true; do sleep 30; done;" ]
