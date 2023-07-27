@@ -1,8 +1,9 @@
 #!/bin/bash
 
+set -e
+
 C3270_CONFIG_FILE=${C3270PRO:-/micro3270/config/.c3270}
 TMP_CONFIG_FILE=/tmp/.c3270
-# C3270_CONFIG_FILE=/tmp/.c3270
 
 printf "\033[0;36m%s\033[0m\n" "Launching ibm/micro3270..."
 printf "Please open questions or report issues here: https://github.com/IBM/micro3270/issues\n\n"
@@ -15,7 +16,7 @@ if [ ! -f "$C3270_CONFIG_FILE" ]; then
     printf "For additional command-line and configuration options, see: https://x3270.miraheze.org/wiki/C3270/Command-line_options\n\n"
 
     if [ ! -w "$C3270_CONFIG_FILE" ]; then
-        printf "\n\033[0;33m%s\033[0m%s" "Default config file location isn't writable, using: " "${TMP_CONFIG_FILE}"
+        printf "\033[0;33m%s\033[0m%s\n\n" "Default config file location isn't writable, using: " "${TMP_CONFIG_FILE}"
         export C3270_CONFIG_FILE=$TMP_CONFIG_FILE
         export C3270PRO=$TMP_CONFIG_FILE
     fi
@@ -38,9 +39,9 @@ cat $C3270_CONFIG_FILE
 printf "\n\n"
 printf "\033[0;36m%s\033[0m\n" "Starting ibm/micro3270..."
 
-if [ -z "$PS1" ]; then
-    printf "\033[0;31m%s\033[0m\n" "Running in non-interactive mode. Use the OCP Terminal UI tab, 'kubectl exec -it', or 'podman exec -it' to interact with the ibm/micro3270 emulator!"
-    /bin/bash -c "while true; do sleep 30; done;"
+if [[ ! -z ${KUBERNETES_SERVICE_HOST+x} && ! -t 0 ]]; then
+    printf "\033[0;33m%s\033[0m\n" "Running in a Kubernetes/OCP environment, use the OCP Terminal UI tab or 'kubectl exec -it' to interact with micro3270!"
+    while true; do sleep 30; done
 else
     exec c3270 "$@"
 fi
