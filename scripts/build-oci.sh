@@ -3,7 +3,7 @@
 REGISTRY="icr.io"
 NAMESPACE="zmodstack"
 REPO="micro3270"
-TAG="0.4.0-rc.3"
+TAG="0.4.0"
 IMAGE=$REGISTRY/$NAMESPACE/$REPO:$TAG
 
 # change dir back to git root
