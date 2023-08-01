@@ -13,26 +13,26 @@ printf "\033[0;33m%s\033[0m\n" "Checking if a configuration file ('$C3270_CONFIG
 printf "This file can be volume mounted to customize your configuration.\n\n"
 
 if [ ! -f "$C3270_CONFIG_FILE" ]; then
-    printf "\033[0;33m%s\033[0m\n" "Configuration file was not provided. Writing default configuration file."
-    printf "For additional command-line and configuration options, see: https://x3270.miraheze.org/wiki/C3270/Command-line_options\n\n"
+	printf "\033[0;33m%s\033[0m\n" "Configuration file was not provided. Writing default configuration file."
+	printf "For additional command-line and configuration options, see: https://x3270.miraheze.org/wiki/C3270/Command-line_options\n\n"
 
-    if [ ! -w "$C3270_CONFIG_FILE" ]; then
-        printf "\033[0;33m%s\033[0m%s\n\n" "Default config file location isn't writable, using: " "${TMP_CONFIG_FILE}"
-        export C3270_CONFIG_FILE=$TMP_CONFIG_FILE
-        export C3270PRO=$TMP_CONFIG_FILE
-    fi
+	if [ ! -w "$C3270_CONFIG_FILE" ]; then
+		printf "\033[0;33m%s\033[0m%s\n\n" "Default config file location isn't writable, using: " "${TMP_CONFIG_FILE}"
+		export C3270_CONFIG_FILE=$TMP_CONFIG_FILE
+		export C3270PRO=$TMP_CONFIG_FILE
+	fi
 
-    cat <<-EOF > $C3270_CONFIG_FILE
+	cat <<-EOF > $C3270_CONFIG_FILE
 		! This file can be volume-mounted via the container runtime
 		c3270.port: ${ZOS_PORT:-23}
 		c3270.hostname: $ZOS_HOST
 	EOF
 
-    if [ -f "$CACERT_FILE" ]; then
-        echo "c3270.caFile: $CACERT_FILE" >> $C3270_CONFIG_FILE
-    fi
+  if [ -f "$CACERT_FILE" ]; then
+    echo "c3270.caFile: $CACERT_FILE" >> $C3270_CONFIG_FILE
+  fi
 else
-    printf "\033[0;36m%s\033[0m\n\n" "Configuration file found!\n\n"
+	printf "\033[0;36m%s\033[0m\n\n" "Configuration file found!\n\n"
 fi
 
 printf "\033[0;36m%s\033[0m\n" "Displaying configuration profile..."
@@ -41,9 +41,9 @@ printf "\n\n"
 printf "\033[0;36m%s\033[0m\n" "Starting ibm/micro3270..."
 
 if [[ ! -z ${KUBERNETES_SERVICE_HOST+x} && ! -t 0 ]]; then
-    printf "\033[0;33m%s\033[0m\n" "Running in a Kubernetes/OCP environment, use the OCP Terminal UI tab or 'kubectl exec -it' to interact with micro3270!"
-    while true; do sleep 30; done
+	printf "\033[0;33m%s\033[0m\n" "Running in a Kubernetes/OCP environment, use the OCP Terminal UI tab or 'kubectl exec -it' to interact with micro3270!"
+	while true; do sleep 30; done
 else
-    sleep 1
-    exec c3270 "$@"
+	sleep 1
+	exec c3270 "$@"
 fi
