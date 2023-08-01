@@ -4,6 +4,7 @@ set -e
 
 C3270_CONFIG_FILE=${C3270PRO:-/micro3270/config/.c3270}
 TMP_CONFIG_FILE=/tmp/.c3270
+CACERT_FILE=/micro3270/config/cacert
 
 printf "\033[0;36m%s\033[0m\n" "Launching ibm/micro3270..."
 printf "Please open questions or report issues here: https://github.com/IBM/micro3270/issues\n\n"
@@ -22,14 +23,14 @@ if [ ! -f "$C3270_CONFIG_FILE" ]; then
     fi
 
     cat <<-EOF > $C3270_CONFIG_FILE
-    ! This file can be volume-mounted via the container runtime
-    c3270.port: ${ZOS_PORT:-23}
-    c3270.hostname: $ZOS_HOST
-
-    ! Uncomment and volume-mount your certificate z/OS environments using TLS connectivity with a self-signed cert
-    ! c3270.caFile: $C3270_CONFIG_FILE
-    ! c3270.acceptHostname <private-ip-address>
+        ! This file can be volume-mounted via the container runtime
+        c3270.port: ${ZOS_PORT:-23}
+        c3270.hostname: $ZOS_HOST
 EOF
+
+    if [ -f "$CACERT_FILE" ]; then
+        echo "c3270.caFile: $CACERT_FILE" >> $C3270_CONFIG_FILE
+    fi
 else
     printf "\033[0;36m%s\033[0m\n\n" "Configuration file found!\n\n"
 fi
@@ -43,5 +44,6 @@ if [[ ! -z ${KUBERNETES_SERVICE_HOST+x} && ! -t 0 ]]; then
     printf "\033[0;33m%s\033[0m\n" "Running in a Kubernetes/OCP environment, use the OCP Terminal UI tab or 'kubectl exec -it' to interact with micro3270!"
     while true; do sleep 30; done
 else
+    sleep 1
     exec c3270 "$@"
 fi
