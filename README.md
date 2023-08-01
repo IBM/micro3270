@@ -35,7 +35,7 @@ With additional [command-line options](https://x3270.miraheze.org/wiki/C3270/Com
 podman run -it icr.io/zmodstack/micro3270 [options] $ZOS_HOST $ZOS_PORT
 ```
 
-### Running Locally with TLS
+## Running with TLS Certicates
 For z/OS environments that require TLS connectivity with self-signed certificates, certificates can be placed in the `/micro3270/config` directory. This can be done via [volume mounting](https://docs.podman.io/en/latest/markdown/podman-run.1.html#mounting-external-volumes) with your container runtime, or through copying files directly into the container's ephemeral filesystem.
 
 Using a "rootless" `podman` environment where the `podman-machine` does NOT have access to the local machine's filesystem
@@ -57,7 +57,7 @@ podman rm micro3270
 podman run -it --rm --name micro3270 -v micro3270-config:/micro3270/config icr.io/zmodstack/micro3270 [options] $ZOS_HOST $ZOS_PORT
 ```
 
-#### Skipping TLS Verification
+### Skipping TLS Verification
 TLS certificate verification may be skipped using the `c3270` `-noverifycert` [command-line option](https://x3270.miraheze.org/wiki/C3270/Command-line_options). 
 
 :warning: This is NOT recommended and may leave you vulnerable to MITM attacks.
@@ -67,7 +67,7 @@ podman run -it --rm --name micro3270 icr.io/zmodstack/micro3270 -noverifycert $Z
 ```
 
 
-### Running with Session Profiles
+## Running with Session Profiles
 A custom `.c3270` session file may be copied into the `/micro3270/config/` directory.
 
 To create a local `.c3270` session profile, reference the `c3270` [command-line options](https://x3270.miraheze.org/wiki/C3270/Command-line_options) and use the "resource format" seen in the **Resource and Further Details** column. 
