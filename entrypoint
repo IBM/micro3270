@@ -28,9 +28,9 @@ if [ ! -f "$C3270_CONFIG_FILE" ]; then
 		c3270.hostname: $ZOS_HOST
 	EOF
 
-  if [ -f "$CACERT_FILE" ]; then
-    echo "c3270.caFile: $CACERT_FILE" >> $C3270_CONFIG_FILE
-  fi
+	if [ -f "$CACERT_FILE" ]; then
+		echo "c3270.caFile: $CACERT_FILE" >> $C3270_CONFIG_FILE
+	fi
 else
 	printf "\033[0;36m%s\033[0m\n\n" "Configuration file found!\n\n"
 fi
