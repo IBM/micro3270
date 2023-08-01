@@ -7,7 +7,7 @@ A containerized lightweight multi-architecture compatible [3270 emulator](https:
 - Mountable configurations and session files with [TLS Support](#running-locally-with-tls)
 - Minimized image size: `~40MB`
 
-![OpenShift Terminal](docs/images/ocp-terminal.png)
+![OpenShift Terminal](docs/images/micro3270-ocp.gif)
 
 ## Usage Guide
 Run this image using [`podman`](https://podman-desktop.io/) with a specified z/OS hostname/ip and port.
@@ -20,7 +20,7 @@ Run this image using [`podman`](https://podman-desktop.io/) with a specified z/O
 - `/micro3270` - default directory within container, contains basic installation files
 - `/micro3270/config` - (optional) configuration directory, expected to be volume mounted from container runtime 
 - `/micro3270/config/.c3270` - (optional) configuration file for setting [configuration options](https://x3270.miraheze.org/wiki/C3270/Command-line_options), will be overwritten by volume mount
-- `/micro3270/config/common_cacert` - (optional) directory containing [TLS certificates](#running-locally-with-tls)
+- `/micro3270/config/cacert` - (optional) directory containing [TLS certificates](#running-locally-with-tls)
 
 
 ## Running Locally
@@ -35,17 +35,54 @@ With additional [command-line options](https://x3270.miraheze.org/wiki/C3270/Com
 podman run -it icr.io/zmodstack/micro3270 [options] $ZOS_HOST $ZOS_PORT
 ```
 
-### Running Locally with TLS
+## Running with TLS Certicates
 For z/OS environments that require TLS connectivity with self-signed certificates, certificates can be placed in the `/micro3270/config` directory. This can be done via [volume mounting](https://docs.podman.io/en/latest/markdown/podman-run.1.html#mounting-external-volumes) with your container runtime, or through copying files directly into the container's ephemeral filesystem.
 
 Using a "rootless" `podman` environment where the `podman-machine` does NOT have access to the local machine's filesystem
 
 ```bash
-podman volume create micro3270-certs
-podman run -d --rm --name micro3270 -v micro3270-certs:/micro3270/config icr.io/zmodstack/micro3270
-podman cp </path/to/local/cacert> micro3270:/micro3270/config/.
-podman stop micro3270
-podman run -it --rm --name micro3270 -v micro3270-certs:/micro3270/config icr.io/zmodstack/micro3270 $ZOS_HOST $ZOS_PORT
+# Create new empty volume
+podman volume create micro3270-config
+
+# Create a temporary micro3270 container with the volume mounted
+podman create --name micro3270 -v micro3270-config:/micro3270/config icr.io/zmodstack/micro3270
+
+# Copy files to container with mounted volume
+podman cp </path/to/local/cert> micro3270:/micro3270/config/cacert
+
+# Remove temporary container
+podman rm micro3270
+
+# Run the micro3270 container
+podman run -it --rm --name micro3270 -v micro3270-config:/micro3270/config icr.io/zmodstack/micro3270 [options] $ZOS_HOST $ZOS_PORT
 ```
 
-Additionally, a custom `.c3270` session file may be copied into the `/micro3270/config/` directory. See the kubernetes [`ConfigMap`](kube/configmap.yml) sample for reference.
+### Skipping TLS Verification
+TLS certificate verification may be skipped using the `c3270` `-noverifycert` [command-line option](https://x3270.miraheze.org/wiki/C3270/Command-line_options). 
+
+:warning: This is NOT recommended and may leave you vulnerable to MITM attacks.
+
+```bash
+podman run -it --rm --name micro3270 icr.io/zmodstack/micro3270 -noverifycert $ZOS_HOST $ZOS_PORT
+```
+
+
+## Running with Session Profiles
+A custom `.c3270` session file may be copied into the `/micro3270/config/` directory.
+
+To create a local `.c3270` session profile, reference the `c3270` [command-line options](https://x3270.miraheze.org/wiki/C3270/Command-line_options) and use the "resource format" seen in the **Resource and Further Details** column. 
+
+Create a `.c3270` file for a specific z/OS host, e.g. `somezoshost.c3270`
+```bash
+c3270.caFile: /micro3270/config/cacert
+c3270.hostname: some.zos.host.com
+c3270.port: 23
+
+! Set additional resource values as necessary
+! c3270.acceptHostname: <private-ip>
+```
+Copy the `somezoshost.c3270` file into your container into the `/micro3270/config/.c3270` location.
+```bash
+podman cp </path/to/local/somezoshost.c3270> micro3270:/micro3270/config/.c3270
+podman run -it --rm --name micro3270 -v micro3270-config:/micro3270/config icr.io/zmodstack/micro3270
+```
