@@ -23,10 +23,10 @@ if [ ! -f "$C3270_CONFIG_FILE" ]; then
     fi
 
     cat <<-EOF > $C3270_CONFIG_FILE
-        ! This file can be volume-mounted via the container runtime
-        c3270.port: ${ZOS_PORT:-23}
-        c3270.hostname: $ZOS_HOST
-EOF
+		! This file can be volume-mounted via the container runtime
+		c3270.port: ${ZOS_PORT:-23}
+		c3270.hostname: $ZOS_HOST
+	EOF
 
     if [ -f "$CACERT_FILE" ]; then
         echo "c3270.caFile: $CACERT_FILE" >> $C3270_CONFIG_FILE
